@@ -41,8 +41,34 @@ async function run() {
         date: booking.date,
         patientEmail: booking.patientEmail,
       };
+      const exists = await bookingCollection.findOne(query);
+      if (exists) {
+        return res.send({ success: false, booking: exists });
+      }
       const result = await bookingCollection.insertOne(booking);
-      res.send(result);
+      res.send({ success: true, result });
+    });
+
+    app.get('/available', async (req, res) => {
+      const date = req.query.date;
+      // get all the services
+      const services = await servicesCollection.find().toArray();
+      // get the booking of that day
+      const query = { date };
+      const bookings = await bookingCollection.find(query).toArray();
+      // For each service find booking for the service
+      services.forEach((service) => {
+        const serviceBookings = bookings.filter(
+          (book) => book.treatment === service.name
+        );
+        const booked = serviceBookings.map((book) => book.slot);
+        const available = service.slots.filter(
+          (slot) => !booked.includes(slot)
+        );
+
+        service.slots = available;
+      });
+      res.send(services);
     });
   } finally {
   }
