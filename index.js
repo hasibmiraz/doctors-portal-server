@@ -8,7 +8,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
-app.use(cors());
+const corsConfig = {
+  origin: true,
+  credentials: true,
+};
+app.use(cors(corsConfig));
+app.options('*', cors(corsConfig));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.02ql6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
