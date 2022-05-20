@@ -140,7 +140,7 @@ async function run() {
       res.send(result);
     });
 
-    app.post('/doctor/:email', verifyJWT, verifyAdmin, async (req, res) => {
+    app.delete('/doctor/:email', verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const result = await doctorCollection.deleteOne({ email });
       res.send(result);
